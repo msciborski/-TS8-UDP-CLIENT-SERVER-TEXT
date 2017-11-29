@@ -107,6 +107,8 @@ namespace ts8.Data {
                 res = OD_Enum.NOT_GUESSED;
             } else if (Enum == "NULL") {
                 res = OD_Enum.NULL;
+            } else if (Enum == "TIME_OUT"){
+                res = OD_Enum.TIME_OUT;
             } else {
                 res = OD_Enum.REQUEST;
             }
@@ -120,7 +122,7 @@ namespace ts8.Data {
             Int32.TryParse(words[3], out data);
             Int32.TryParse(words[2], out id);
             //return new Packet(odEnum(recString), opEnum(recString), id, data);
-            return new Packet(id, data,odEnum(recString),opEnum(recString));
+            return new Packet(id, data,odEnum(words[1]),opEnum(words[0]));
         }
 
         public void printPacketInfo() {

@@ -47,7 +47,7 @@ namespace ts8.Server {
             while (_players.Count < playerLimit) {
                 IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
                 byte[] recvMsg = _listener.Receive(ref sender);
-                Data.Packet packet = Data.Packet.Deserialize(Encoding.ASCII.GetString(recvMsg));
+                Data.Packet packet = Data.Packet.Deserialize(Encoding.UTF8.GetString(recvMsg));
                 Console.WriteLine("ID: {0}, data: {1}, answer: {2}, operation: {3}", packet.ID, packet.Data, packet.OD, packet.OP);
 
                 ProcessData(packet, sender);
@@ -58,7 +58,7 @@ namespace ts8.Server {
             foreach (var playerData in _players) {
                 Data.Packet packet = new Data.Packet(playerData.Value.SessionID, 0, OD_Enum.ACK, OP_Enum.START);
                 string stringToSend = packet.Serialize();
-                byte[] bytesToSend = Encoding.ASCII.GetBytes(stringToSend);
+                byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                 _listener.Send(bytesToSend, bytesToSend.Length, playerData.Value.PlayerEndPoint);
             }
         }
@@ -105,7 +105,7 @@ namespace ts8.Server {
                         Data.Packet packetToSend = new Data.Packet(playerData.Value.SessionID, 0, OD_Enum.TIME_OUT,
                             OP_Enum.TIME);
                         string stringToSend = packetToSend.Serialize();
-                        byte[] bytesToSend = Encoding.ASCII.GetBytes(stringToSend);
+                        byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                         _listener.Send(bytesToSend, bytesToSend.Length, playerData.Value.PlayerEndPoint);
                     } catch (Exception e) {
                         Console.WriteLine("Client disconected: {0}", playerData.Value.SessionID);
@@ -122,7 +122,7 @@ namespace ts8.Server {
                 Console.WriteLine("Wysyłam czas do: {0}", playerData.Key.ToString());
                 Data.Packet packet = new Data.Packet(playerData.Value.SessionID, timeToSend, OD_Enum.NULL, OP_Enum.TIME);
                 string stringToSend = packet.Serialize();
-                byte[] bytesToSend = Encoding.ASCII.GetBytes(stringToSend);
+                byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                 _listener.Send(bytesToSend, bytesToSend.Length, playerData.Key);
             }
         }
@@ -133,7 +133,7 @@ namespace ts8.Server {
                 IPEndPoint sender = (IPEndPoint)ep;
                 try {
                     byte[] recByte = _listener.Receive(ref sender);
-                    string recString = Encoding.ASCII.GetString(recByte);
+                    string recString = Encoding.UTF8.GetString(recByte);
                     Data.Packet packet = Data.Packet.Deserialize(recString);
                     Console.WriteLine("ID: {0}, data: {1}, answer: {2}, operation: {3}", packet.ID, packet.Data, packet.OD, packet.OP);
 
@@ -174,7 +174,7 @@ namespace ts8.Server {
                 _players.Add(endPoint, new PlayerData(endPoint, id));
                 Data.Packet packetToSend = new Data.Packet(id, 0, OD_Enum.ACK, OP_Enum.REGISTER);
                 string stringToSend = packetToSend.Serialize();
-                byte[] bytesToSend = Encoding.ASCII.GetBytes(stringToSend);
+                byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                 _listener.Send(bytesToSend, bytesToSend.Length, endPoint);
             }
         }
@@ -183,7 +183,7 @@ namespace ts8.Server {
             if (packet.Data == numberToGuess) {
                 Data.Packet packetToSend = new Data.Packet(packet.ID, 0, OD_Enum.GUESSED, OP_Enum.GUESS);
                 string stringToSend = packetToSend.Serialize();
-                byte[] bytesToSend = Encoding.ASCII.GetBytes(stringToSend);
+                byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                 _listener.Send(bytesToSend, bytesToSend.Length, endPoint);
                 gameRunning = false;
                 timer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -192,7 +192,7 @@ namespace ts8.Server {
                         Data.Packet packetToSendForNotGuessed = new Data.Packet(playerData.Value.SessionID, 0,
                             OD_Enum.NULL, OP_Enum.SUMMARY);
                         string stringToSendForNotGuessed = packetToSendForNotGuessed.Serialize();
-                        byte[] bytesToSendForNotGuessed = Encoding.ASCII.GetBytes(stringToSendForNotGuessed);
+                        byte[] bytesToSendForNotGuessed = Encoding.UTF8.GetBytes(stringToSendForNotGuessed);
                         _listener.Send(bytesToSendForNotGuessed, bytesToSendForNotGuessed.Length, playerData.Key);
                     }
                 }
@@ -202,7 +202,7 @@ namespace ts8.Server {
             } else {
                 Data.Packet packetToSend = new Data.Packet(packet.ID, 0, OD_Enum.NOT_GUESSED, OP_Enum.GUESS);
                 string stringToSend = packetToSend.Serialize();
-                byte[] bytesToSend = Encoding.ASCII.GetBytes(stringToSend);
+                byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                 _listener.Send(bytesToSend, bytesToSend.Length, endPoint);
             }
         }
