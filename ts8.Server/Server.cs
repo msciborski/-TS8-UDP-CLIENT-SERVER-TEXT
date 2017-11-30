@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -158,10 +159,18 @@ namespace ts8.Server {
             Console.WriteLine("ID: {0}, data: {1}, answer: {2}, operation: {3}", packet.ID, packet.Data, packet.OD, packet.OP);
 
             if (packet.OP == OP_Enum.REGISTER && packet.OD == OD_Enum.REQUEST) {
+                Packet ackPacket = new Packet(packet.ID, OD_Enum.NULL, OP_Enum.ACK);
+                string ackString = ackPacket.Serialize();
+                byte[] bytesAck = Encoding.UTF8.GetBytes(ackString);
+                _listener.Send(bytesAck, bytesAck.Length, endPoint);
                 Console.Write("Operation: {0}, answer: {1}, id: {2}, data: {3}", packet.OP, packet.OD, packet.ID, packet.Data);
                 Register(packet, endPoint);
             }
             if (packet.OP == OP_Enum.GUESS) {
+                Packet ackPacket = new Packet(packet.ID, OD_Enum.NULL, OP_Enum.ACK);
+                string ackString = ackPacket.Serialize();
+                byte[] bytesAck = Encoding.UTF8.GetBytes(ackString);
+                _listener.Send(bytesAck, bytesAck.Length, endPoint);
                 Guessing(packet, endPoint);
             }
         }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ts8.Data {
-    public enum OP_Enum { REGISTER, TIME, GUESS, SUMMARY, START }
+    public enum OP_Enum { REGISTER, TIME, GUESS, SUMMARY, START, ACK }
     public enum OD_Enum { NULL, REQUEST, ACK, NOT_ENOUGH_SPACE, ERROR, GUESSED, NOT_GUESSED, TIME_OUT }
 
     public class Packet {
@@ -35,7 +35,7 @@ namespace ts8.Data {
         }
 
         public string Serialize() {
-            string result = "OP?" + opFill() + "<<OD?" + odFill() + "<<ID?" + ID.ToString() + "<<DT?" + Data.ToString() + "<<";
+            string result = "OP?" + opFill() + "<<OD?" + odFill() + "<<ID?" + ID.ToString() + "<<DT?" + Data.ToString() + "<<CZ?" + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToShortTimeString() + "<<";
             return result;
         }
 
@@ -49,6 +49,8 @@ namespace ts8.Data {
                 result += "START";
             } else if (this.OP == OP_Enum.TIME) {
                 result += "TIME";
+            } else if (this.OP == OP_Enum.ACK) {
+                result += "ACK";
             } else {
                 result += "SUMMARY";
             }
@@ -69,7 +71,7 @@ namespace ts8.Data {
                 result += "NOT_GUESSED";
             } else if (this.OD == OD_Enum.NULL) {
                 result += "NULL";
-            } else if (this.OD == OD_Enum.TIME_OUT){
+            } else if (this.OD == OD_Enum.TIME_OUT) {
                 result += "TIME_OUT";
             } else {
                 result += "REQUEST";
@@ -87,6 +89,8 @@ namespace ts8.Data {
                 res = OP_Enum.START;
             } else if (Enum == "SUMMARY") {
                 res = OP_Enum.SUMMARY;
+            } else if (Enum == "ACK") {
+                res = OP_Enum.ACK;
             } else {
                 res = OP_Enum.TIME;
             }
@@ -107,7 +111,7 @@ namespace ts8.Data {
                 res = OD_Enum.NOT_GUESSED;
             } else if (Enum == "NULL") {
                 res = OD_Enum.NULL;
-            } else if (Enum == "TIME_OUT"){
+            } else if (Enum == "TIME_OUT") {
                 res = OD_Enum.TIME_OUT;
             } else {
                 res = OD_Enum.REQUEST;
@@ -122,7 +126,7 @@ namespace ts8.Data {
             Int32.TryParse(words[3], out data);
             Int32.TryParse(words[2], out id);
             //return new Packet(odEnum(recString), opEnum(recString), id, data);
-            return new Packet(id, data,odEnum(words[1]),opEnum(words[0]));
+            return new Packet(id, data, odEnum(words[1]), opEnum(words[0]));
         }
 
         public void printPacketInfo() {
