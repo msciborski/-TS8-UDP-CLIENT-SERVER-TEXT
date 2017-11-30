@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ts8.Data {
     public enum OP_Enum { REGISTER, TIME, GUESS, SUMMARY, START, ACK }
-    public enum OD_Enum { NULL, REQUEST, ACK, NOT_ENOUGH_SPACE, ERROR, GUESSED, NOT_GUESSED, TIME_OUT }
+    public enum OD_Enum { NULL, REQUEST, ACKX, NOT_ENOUGH_SPACE, ERROR, GUESSED, NOT_GUESSED, TIME_OUT }
 
     public class Packet {
         public int ID { get; set; }
@@ -59,8 +59,8 @@ namespace ts8.Data {
 
         public string odFill() {
             string result = "";//"OD?";
-            if (this.OD == OD_Enum.ACK) {
-                result += "ACK";
+            if (this.OD == OD_Enum.ACKX) {
+                result += "ACKX";
             } else if (this.OD == OD_Enum.ERROR) {
                 result += "ERROR";
             } else if (this.OD == OD_Enum.GUESSED) {
@@ -99,8 +99,8 @@ namespace ts8.Data {
 
         private static OD_Enum odEnum(string Enum) {
             OD_Enum res;
-            if (Enum == "ACK") {
-                res = OD_Enum.ACK;
+            if (Enum == "ACKX") {
+                res = OD_Enum.ACKX;
             } else if (Enum == "ERROR") {
                 res = OD_Enum.ERROR;
             } else if (Enum == "GUESSED") {

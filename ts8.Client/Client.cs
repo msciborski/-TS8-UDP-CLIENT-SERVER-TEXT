@@ -67,8 +67,13 @@ namespace ts8.Client {
                         string recString = Encoding.UTF8.GetString(recBuff);
                         if (recBuff.Length > 0) {
                             Data.Packet recvPacket = Data.Packet.Deserialize(recString);
+                            Packet packet = new Packet(recvPacket.ID, OD_Enum.NULL, OP_Enum.ACK);
+                            string serializedString = packet.Serialize();
+                            byte[] bytesAck = Encoding.ASCII.GetBytes(serializedString);
+                            _udpClient.Send(bytesAck, bytesAck.Length);
                             Thread dataManagerThread = new Thread(DataManager);
                             dataManagerThread.Start(recvPacket);
+                            Console.WriteLine("ID: {0} OD: {1} OP: {2} DATA: {3}", recvPacket.ID, recvPacket.OD, recvPacket.OP, recvPacket.Data);
                         }
                 } catch (Exception e) {
                     Console.WriteLine("Server disconnected");

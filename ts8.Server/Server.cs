@@ -13,7 +13,7 @@ namespace ts8.Server {
     class Server {
         private const int listenPort = 6100;
         private const int timeSenderPort = 11000;
-        private const int playerLimit = 1;
+        private const int playerLimit = 2;
         private static int time;
         private static int tempTime = 0;
         private static bool gameRunning = false;
@@ -57,7 +57,7 @@ namespace ts8.Server {
 
         private static void SendStartMessage() {
             foreach (var playerData in _players) {
-                Data.Packet packet = new Data.Packet(playerData.Value.SessionID, 0, OD_Enum.ACK, OP_Enum.START);
+                Data.Packet packet = new Data.Packet(playerData.Value.SessionID, 0, OD_Enum.ACKX, OP_Enum.START);
                 string stringToSend = packet.Serialize();
                 byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                 _listener.Send(bytesToSend, bytesToSend.Length, playerData.Value.PlayerEndPoint);
@@ -181,7 +181,7 @@ namespace ts8.Server {
             if (!_players.ContainsKey(endPoint)) {
                 var id = HelperData.RandomInt(0, 255);
                 _players.Add(endPoint, new PlayerData(endPoint, id));
-                Data.Packet packetToSend = new Data.Packet(id, 0, OD_Enum.ACK, OP_Enum.REGISTER);
+                Data.Packet packetToSend = new Data.Packet(id, 0, OD_Enum.ACKX, OP_Enum.REGISTER);
                 string stringToSend = packetToSend.Serialize();
                 byte[] bytesToSend = Encoding.UTF8.GetBytes(stringToSend);
                 _listener.Send(bytesToSend, bytesToSend.Length, endPoint);
