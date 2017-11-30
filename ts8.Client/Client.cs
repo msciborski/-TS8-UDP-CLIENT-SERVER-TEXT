@@ -29,16 +29,14 @@ namespace ts8.Client {
                     byte[] msgToSend = Encoding.UTF8.GetBytes(stringToSend);
                     _udpClient.Send(msgToSend, msgToSend.Length);
 
-                    byte[] recACK = _udpClient.Receive(ref remoteEndPoint);
+                    byte[] recACK = _udpClient.Receive(ref Program.remoteEndPoint);
                     string ackString = Encoding.UTF8.GetString(recACK);
                     Packet ackPacket = Packet.Deserialize(ackString);
-                    if (ackPacket.OP == OP_Enum.ACK){
-                        byte[] recvMessage = _udpClient.Receive(ref Program.remoteEndPoint);
-                        string recvMessageString = Encoding.UTF8.GetString(recvMessage);
-                        Data.Packet recPacket = Data.Packet.Deserialize(recvMessageString);
-                        Console.WriteLine("Zarejestrowano, ID: {0}, data: {1}, answer: {2}, operation: {3}", recPacket.ID, recPacket.Data, recPacket.OD, recPacket.OP);
-                        registered = true;
-                    }
+                    byte[] recvMessage = _udpClient.Receive(ref Program.remoteEndPoint);
+                    string recvMessageString = Encoding.UTF8.GetString(recvMessage);
+                    Data.Packet recPacket = Data.Packet.Deserialize(recvMessageString);
+                    Console.WriteLine("Zarejestrowano, ID: {0}, data: {1}, answer: {2}, operation: {3}", recPacket.ID, recPacket.Data, recPacket.OD, recPacket.OP);
+                    registered = true;
                 } else {
                     Console.WriteLine("Niepoprawna komenda");
                     registered = false;
@@ -51,7 +49,7 @@ namespace ts8.Client {
 
         private static void SetupClient() {
             //IPAddress endpointIPAddress = IPAddress.Parse("172.20.10.8"); //tutaj wpisać adres serwera
-            IPAddress endpointIPAddress = IPAddress.Parse("127.0.0.1"); //tutaj wpisać adres serwera
+            IPAddress endpointIPAddress = IPAddress.Parse("192.168.0.1"); //tutaj wpisać adres serwera
 
             _udpClient = new UdpClient();
             _udpClient.Connect(endpointIPAddress, listenPort);
@@ -64,11 +62,7 @@ namespace ts8.Client {
 
         private static void DataIN() {
             while (gameRunning) {
-                try{
-                    byte[] recACK = _udpClient.Receive(ref remoteEndPoint);
-                    string stringACK = Encoding.UTF8.GetString(recACK);
-                    Packet ackPacket = Packet.Deserialize(stringACK);
-                    if (ackPacket.OP == OP_Enum.ACK){
+                try {
                         byte[] recBuff = _udpClient.Receive(ref remoteEndPoint);
                         string recString = Encoding.UTF8.GetString(recBuff);
                         if (recBuff.Length > 0) {
@@ -76,7 +70,6 @@ namespace ts8.Client {
                             Thread dataManagerThread = new Thread(DataManager);
                             dataManagerThread.Start(recvPacket);
                         }
-                    }
                 } catch (Exception e) {
                     Console.WriteLine("Server disconnected");
                 }
