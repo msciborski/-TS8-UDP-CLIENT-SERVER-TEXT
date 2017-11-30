@@ -35,6 +35,10 @@ namespace ts8.Client {
                     byte[] recvMessage = _udpClient.Receive(ref Program.remoteEndPoint);
                     string recvMessageString = Encoding.UTF8.GetString(recvMessage);
                     Data.Packet recPacket = Data.Packet.Deserialize(recvMessageString);
+                    Packet sendACK = new Packet(recPacket.ID, OD_Enum.NULL, OP_Enum.ACK);
+                    string ackSend = sendACK.Serialize();
+                    byte[] ackSendByte = Encoding.UTF8.GetBytes(ackSend);
+                    _udpClient.Send(ackSendByte, ackSendByte.Length);
                     Console.WriteLine("Zarejestrowano, ID: {0}, data: {1}, answer: {2}, operation: {3}", recPacket.ID, recPacket.Data, recPacket.OD, recPacket.OP);
                     registered = true;
                 } else {
